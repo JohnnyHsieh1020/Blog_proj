@@ -17,7 +17,7 @@ def login():
         email = request.form.get('email')
         pwd = request.form.get('password')
 
-        # Check login info is correct
+        # Check login info
         user = User.query.filter_by(email=email).first()
         if user:
             if check_password_hash(user.pwd, pwd):
@@ -30,7 +30,7 @@ def login():
         else:
             flash('Email does not exsit!', category='error')
 
-    return render_template('login.html')
+    return render_template('login.html', user=current_user)
 
 
 # Sign up page
@@ -49,11 +49,11 @@ def sign_up():
 
         # Info restrictions
         if username_exists:
-            flash('Name is already in use!', category='error')
+            flash('Name is already in used!', category='error')
         elif len(username) <= 2:
             flash('Name must be greater than 2 characters.', category='error')
         elif email_exists:
-            flash('Email is already in use!', category='error')
+            flash('Email is already in used!', category='error')
         elif len(email) <= 4:
             flash('Email must be greater than 4 characters.', category='error')
         elif pwd_1 != pwd_2:
@@ -69,7 +69,7 @@ def sign_up():
             flash('User Created!', category='success')
             return redirect(url_for('views.home'))
 
-    return render_template('sign_up.html')
+    return render_template('sign_up.html', user=current_user)
 
 
 # Logout

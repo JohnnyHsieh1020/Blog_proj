@@ -10,8 +10,9 @@ DB_NAME = 'database.db'
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'blogflask'
-    app.config['SQL_ALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SECRET_KEY'] = 'blogflask2021'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
     # Register Bluepirnt
@@ -22,7 +23,7 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
 
     # Create DB
-    from .models import User
+    from .models import User, Post, Comment, Like
 
     create_database(app)
 
@@ -42,4 +43,4 @@ def create_app():
 def create_database(app):
     if not path.exists('blog/' + DB_NAME):
         db.create_all(app=app)
-        print('Database created successfully!')
+        print('Database created!')
