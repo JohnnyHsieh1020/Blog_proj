@@ -2,15 +2,22 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 from .models import User, Post, Comment, Like
 from . import db
+from werkzeug.utils import secure_filename
+import os
 
 
 views = Blueprint('views', __name__)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # Home Page
 @views.route('/')
 @views.route('/home')
-@login_required # Access this page if you have logged in.
+@login_required  # Access this page if you have logged in.
 def home():
     # Get all the posts
     posts = Post.query.all()
@@ -19,27 +26,42 @@ def home():
 
 # Create Post Page
 @views.route('/create_post', methods=['Get', 'POST'])
-@login_required # Access this page if you have logged in.
+@login_required  # Access this page if you have logged in.
 def create_post():
     if request.method == 'POST':
         content = request.form.get('content')
-        
+        file = request.files['image']
+
         if not content:
             flash('Post cannot be empty!', category='error')
-        else:
-            post = Post(content=content, author_id=current_user.id)
+        elif file.filename == '':
+            post = Post(content=content, image_name=None, author_id=current_user.id)
+
             db.session.add(post)
             db.session.commit()
             flash('Post created!', category='success')
 
             return redirect(url_for('views.home'))
+        elif file and allowed_file(file.filename):
+            image_name = secure_filename(file.filename)
+            file.save(os.path.join('blog/static/images', image_name))
+            post = Post(content=content, image_name=image_name,
+                        author_id=current_user.id)
+
+            db.session.add(post)
+            db.session.commit()
+            flash('Post created!', category='success')
+
+            return redirect(url_for('views.home'))
+        else:
+            flash('Allowed Image Types: .png .jpg .jpeg .gif', category='error')
 
     return render_template('create_post.html', user=current_user)
 
 
 # View User's Posts
 @views.route('/posts/<username>')
-@login_required # Access this page if you have logged in.
+@login_required  # Access this page if you have logged in.
 def posts(username):
     # Get the posts of the current user
     user = User.query.filter_by(username=username).first()
@@ -55,7 +77,7 @@ def posts(username):
 
 # Create Comment
 @views.route('/create_comment/<post_id>', methods=['POST'])
-@login_required # Access this page if you have logged in.
+@login_required  # Access this page if you have logged in.
 def create_comment(post_id):
     content = request.form.get('comment')
 
@@ -76,17 +98,24 @@ def create_comment(post_id):
 
 # Delete Post
 @views.route('/delete_post/<post_id>')
-@login_required # Access this page if you have logged in.
+@login_required  # Access this page if you have logged in.
 def delete_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-
+    image_name = post.image_name
+    
     if not post:
         flash('Post does not exist!', category='error')
     elif current_user.id != post.author_id:
         flash('Permission Denied!', category='error')
     else:
-        db.session.delete(post)
-        db.session.commit()
+        if image_name != None:
+            os.remove(f"blog/static/images/{image_name}")
+            db.session.delete(post)
+            db.session.commit()
+        else:
+            db.session.delete(post)
+            db.session.commit()
+        
         flash('Post Deleted!', category='success')
 
     return redirect(url_for('views.home'))
@@ -94,7 +123,7 @@ def delete_post(post_id):
 
 # Delete Comment
 @views.route('/delete_comment/<comment_id>')
-@login_required # Access this page if you have logged in.
+@login_required  # Access this page if you have logged in.
 def delete_comment(comment_id):
     comment = Comment.query.filter_by(id=comment_id).first()
 
@@ -111,7 +140,7 @@ def delete_comment(comment_id):
 
 # Like Post
 @views.route('/like_post/<post_id>', methods=['POST'])
-@login_required # Access this page if you have logged in.
+@login_required  # Access this page if you have logged in.
 def like_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
     like = Like.query.filter_by(

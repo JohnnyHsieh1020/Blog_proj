@@ -2,10 +2,16 @@
 {% block title %}Create Post Page{% endblock %}
 {% block content %}
 <h1 align="center">Make a Post</h1>
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
+    <h3>Content:</h3>
     <textarea name="content" id="content" class="form-control"></textarea>
     <br />
-    
+
+    <div class="form-group">
+        <h3 for="inputFile">Upload Image:</h3>
+        <input class="form-control" name="image" id="image" type="file">
+    </div>
+
     <div align="center">
         <button type="submit" class="btn btn-lg btn-primary">Post</button>
     </div>
