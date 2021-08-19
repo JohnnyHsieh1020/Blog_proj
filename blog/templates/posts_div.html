@@ -37,10 +37,10 @@
                 <!-- Display content of the post -->
                 <div class="card-body">
                     {% if not post.image_name %}
-                    <div class="card-text">{{post.content}}</div><br />
+                    <div class="card-text">{{post.content|safe}}</div><br />
                     {% else %}
                     <div class="card-text">
-                        {{post.content}}<br />
+                        {{post.content|safe}}<br />
                         <img src="/static/images/{{post.image_name}}" width="50%" height="50%">
                     </div><br />
                     {% endif %}

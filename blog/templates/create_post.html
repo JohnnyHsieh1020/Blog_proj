@@ -3,13 +3,14 @@
 {% block content %}
 <h1 align="center">Make a Post</h1>
 <form method="POST" enctype="multipart/form-data">
-    <h3>Content:</h3>
-    <textarea name="content" id="content" class="form-control"></textarea>
-    <br />
+    <div class="form-group">
+        <h3>Content:</h3>
+        <textarea id="summernote" name="content" class='form-control'></textarea> 
+    </div>
 
     <div class="form-group">
         <h3 for="inputFile">Upload Image:</h3>
-        <input class="form-control" name="image" id="image" type="file">
+        <input class="form-control" name="image" id="image" type="file" >
     </div>
 
     <div align="center">
@@ -23,4 +24,9 @@
         <button type="button" class="btn btn-lg btn-secondary">Back</button>
     </a>
 </div>
+<script>
+    $(document).ready(function () {
+        $('#summernote').summernote();
+    });
+</script>
 {% endblock %}
