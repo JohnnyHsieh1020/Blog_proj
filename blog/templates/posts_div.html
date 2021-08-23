@@ -1,7 +1,7 @@
 {% extends 'base.html' %} 
 {% block title %}Home Page{% endblock %}
 {% block content %}
-    <h1 align="center">{% block header %}Posts{% endblock %}</h1>
+    <h1 align="center" style="padding-top: 10px;">{% block header %}Posts{% endblock %}</h1>
     <div class="posts">
         {% for post in posts %}
             <div class="card border-dark">
@@ -41,7 +41,7 @@
                     {% else %}
                     <div class="card-text">
                         {{post.content|safe}}<br />
-                        <img src="/static/images/{{post.image_name}}" width="50%" height="50%">
+                        <img src="/static/images/{{post.image_name}}" width="60%" height="60%">
                     </div><br />
                     {% endif %}
                     
@@ -141,10 +141,10 @@
 
     <!-- Create Post -->
     {% block footer %}
-        <div align="center">
+        <div align="right" class="fixed-bottom" style="padding-bottom: 20px; padding-right: 20px;">
             <a href="/create_post">
-                <button type="button" class="btn btn-primary btn-lg">
-                Create a Post
+                <button type="button" class="btn btn-primary btn-lg" style="border-radius: 50%; width:50px; height:50px; font-size:20px;">
+                +
                 </button>
             </a>
         </div>

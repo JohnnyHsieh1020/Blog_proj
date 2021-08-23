@@ -69,6 +69,11 @@
                         </li>
                         {% if user.is_authenticated%}
                         <li class="nav-item">
+                            <a class="nav-link" href="/profile"
+                                >Profile</a
+                            >
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="/posts/{{user.username}}"
                                 >My posts</a
                             >
@@ -99,7 +104,6 @@
             </div>
         </nav>
         <!-- Navbar End -->
-        <br />
         <br />
         <br />
         <!-- Flash Msg-->
@@ -136,8 +140,7 @@
         <div class="container">{% block content %}{% endblock %}</div>
         <!-- Content End -->
         <br />
-        <br />
-        <br />
+
         <!-- Script -->
         <!-- Bootstrap Bundle -->
         <script

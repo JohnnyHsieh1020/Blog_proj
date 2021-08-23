@@ -9,6 +9,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True)
     email = db.Column(db.String(150), unique=True)
     pwd = db.Column(db.String(150))
+    image_name = db.Column(db.String(128), nullable=False, default='default.png')
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     posts = db.relationship('Post', backref='user',
                             cascade='all, delete, delete-orphan')

@@ -4,6 +4,7 @@ from .models import User, Post, Comment, Like
 from . import db
 from werkzeug.utils import secure_filename
 import os
+from datetime import datetime
 
 
 views = Blueprint('views', __name__)
@@ -43,7 +44,7 @@ def create_post():
 
             return redirect(url_for('views.home'))
         elif file and allowed_file(file.filename):
-            image_name = secure_filename(file.filename)
+            image_name = datetime.now().strftime('%Y%m%d%H%M%S') + secure_filename(file.filename)
             file.save(os.path.join('blog/static/images', image_name))
             post = Post(content=content, image_name=image_name,
                         author_id=current_user.id)
@@ -53,8 +54,6 @@ def create_post():
             flash('Post created!', category='success')
 
             return redirect(url_for('views.home'))
-        else:
-            flash('Allowed Image Types: .png .jpg .jpeg .gif', category='error')
 
     return render_template('create_post.html', user=current_user)
 

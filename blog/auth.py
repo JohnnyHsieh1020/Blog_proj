@@ -4,6 +4,9 @@ from . import db
 from .models import User
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import os
+from datetime import datetime
 
 
 auth = Blueprint('auth', __name__)
@@ -50,16 +53,10 @@ def sign_up():
         # Info restrictions
         if username_exists:
             flash('Name is already in used!', category='error')
-        elif len(username) <= 2:
-            flash('Name must be greater than 2 characters.', category='error')
         elif email_exists:
             flash('Email is already in used!', category='error')
-        elif len(email) <= 4:
-            flash('Email must be greater than 4 characters.', category='error')
         elif pwd_1 != pwd_2:
             flash('Password don\'t match!', category='error')
-        elif len(pwd_1) <= 5:
-            flash('Password must be greater than 5 characters.', category='error')
         else:
             new_user = User(username=username, email=email,
                             pwd=generate_password_hash(pwd_1, method='sha256'))
@@ -70,6 +67,93 @@ def sign_up():
             return redirect(url_for('views.home'))
 
     return render_template('sign_up.html', user=current_user)
+
+
+# Profile Page
+@auth.route('/profile', methods=['Get', 'POST'])
+@login_required  # Access this page if you have logged in.
+def profile():
+    user = User.query.filter_by(id=current_user.id).first()
+
+    if user:
+        if request.method == 'POST':
+            # Get new info
+            name = request.form['name'] 
+            pwd_1 = request.form['password1']
+            pwd_2 = request.form['password2']
+            
+            if current_user.username != name:
+                username_exists = User.query.filter_by(username=name).first()
+                if username_exists:
+                    flash('Name is already in used!', category='error')
+                    return render_template('profile.html', user=current_user, username=current_user.username)
+                elif pwd_1 == '' and pwd_2 == '':
+                    # Update data
+                    user.username = name
+                    db.session.commit()
+                    
+                    # Show message
+                    flash('Saved!', category='success')
+                elif pwd_1 != pwd_2:
+                    flash('Password don\'t match!', category='error')
+                    return render_template('profile.html', user=current_user, username=current_user.username)
+                else:
+                    # Update data
+                    user.username = name
+                    user.pwd = generate_password_hash(
+                        pwd_1, method='sha256')
+                    db.session.commit()
+
+                    # Show message
+                    flash('Saved!', category='success')
+                # return render_template('profile.html', user=current_user, username=name)
+            else:
+                if pwd_1 == '' and pwd_2 == '':
+                    # Update data
+                    user.username = name
+                    db.session.commit()
+                    
+                    # Show message
+                    flash('Saved!', category='success')
+                elif pwd_1 != pwd_2:
+                    flash('Password don\'t match!', category='error')
+                    return render_template('profile.html', user=current_user, username=current_user.username)
+                else:
+                    # Update data
+                    user.username = name
+                    user.pwd = generate_password_hash(
+                        pwd_1, method='sha256')
+                    db.session.commit()
+
+                    # Show message
+                    flash('Saved!', category='success')
+            return render_template('profile.html', user=current_user, username=name)
+        else:
+            return render_template('profile.html', user=current_user, username=current_user.username)
+
+
+# Update Photo
+@auth.route('/update_photo', methods=['POST'])
+@login_required  # Access this page if you have logged in.
+def update_photo():
+    user = User.query.filter_by(id=current_user.id).first()
+    file = request.files['image']
+
+    if not file :
+        flash('Please Upload A Photo!', category='error')
+    else:
+        image_name = datetime.now().strftime('%Y%m%d%H%M%S') + secure_filename(file.filename)
+        file.save(os.path.join('blog/static/profile_images', image_name))
+        if user.image_name != 'default.png':
+            os.remove(f"blog/static/profile_images/{user.image_name}")
+            user.image_name = image_name
+            db.session.commit()
+      
+        user.image_name = image_name
+        db.session.commit()
+        flash('Saved!', category='success')
+
+    return render_template('profile.html', user=current_user, username=current_user.username)
 
 
 # Logout
