@@ -109,12 +109,7 @@ def profile():
                 # return render_template('profile.html', user=current_user, username=name)
             else:
                 if pwd_1 == '' and pwd_2 == '':
-                    # Update data
-                    user.username = name
-                    db.session.commit()
-                    
-                    # Show message
-                    flash('Saved!', category='success')
+                    flash('Please make some changes!', category='error')
                 elif pwd_1 != pwd_2:
                     flash('Password don\'t match!', category='error')
                     return render_template('profile.html', user=current_user, username=current_user.username)
