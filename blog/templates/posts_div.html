@@ -7,7 +7,14 @@
             <div class="card border-dark">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <!-- Display user name of the post -->
-                    <a href="/posts/{{post.user.username}}">{{post.user.username}}</a>
+                    <div class="media">
+                        <a href="/posts/{{post.user.username}}" style="margin-right: 10px;">
+                            <img src="/static/profile_images/{{post.user.image_name}}" class="rounded-circle" style="height: 50px; width: 50px;">
+                        </a>
+                        <div class="media-body" style="font-size: 15px; margin-top: 13px;">
+                            <a href="/posts/{{post.user.username}}" >{{post.user.username}}</a>
+                        </div>
+                    </div>
                     
                     <div>
                         <!-- Likes Count -->
@@ -51,10 +58,16 @@
                             <div class="card-body" id="comments-expanded-{{post.id}}">
                                 {% for comment in post.comments %}
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <!-- Display user name and text of comment -->
-                                            <a href="/posts/{{comment.user.username}}">{{comment.user.username}}</a>: {{comment.content}}
+                                        <!-- Display user name and text of comment -->
+                                        <div class="media">
+                                            <a href="/posts/{{comment.user.username}}" style="margin-right: 10px;">
+                                                <img src="/static/profile_images/{{comment.user.image_name}}" class="rounded-circle" style="height: 40px; width: 40px;">
+                                            </a>
+                                            <div class="media-body" style="font-size: 15px; margin-top: 8px;">
+                                                <a href="/posts/{{comment.user.username}}" >{{comment.user.username}}</a>: {{comment.content}}
+                                            </div>
                                         </div>
+
                                         <div>
                                             <!-- Display time -->
                                             <small class="text-muted"> {{comment.date_created.strftime('%Y-%m-%d %H:%M:%S')}}</small>
@@ -72,6 +85,7 @@
                                             {% endif %}
                                         </div>
                                     </div>
+                                    <br />
                                 {% endfor %}
                             </div>
                         </div>
@@ -91,10 +105,16 @@
                                     <div class="card-body" id="comments-expanded-{{post.id}}">
                                         {% for comment in post.comments %}
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <!-- Display user name and text of comment -->
-                                                    <a href="/posts/{{comment.user.username}}">{{comment.user.username}}</a>: {{comment.content}}
+                                                <!-- Display user name and text of comment -->
+                                                <div class="media">
+                                                    <a href="/posts/{{comment.user.username}}" style="margin-right: 10px;">
+                                                        <img src="/static/profile_images/{{comment.user.image_name}}" class="rounded-circle" style="height: 40px; width: 40px;">
+                                                    </a>
+                                                    <div class="media-body" style="font-size: 15px; margin-top: 8px;">
+                                                        <a href="/posts/{{comment.user.username}}" >{{comment.user.username}}</a>: {{comment.content}}
+                                                    </div>
                                                 </div>
+
                                                 <div>
                                                     <!-- Display time -->
                                                     <small class="text-muted"> {{comment.date_created.strftime('%Y-%m-%d %H:%M:%S')}}</small>
