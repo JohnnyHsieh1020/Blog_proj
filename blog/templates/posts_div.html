@@ -1,172 +1,179 @@
 {% extends 'base.html' %} 
 {% block title %}Home Page{% endblock %}
 {% block content %}
-    <h1 align="center" style="padding-top: 10px;">{% block header %}Posts{% endblock %}</h1>
-    <div class="posts">
-        {% for post in posts %}
-            <div class="card border-dark">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <!-- Display user name of the post -->
-                    <div class="media">
-                        <a href="/posts/{{post.user.username}}" style="margin-right: 10px;">
-                            <img src="/static/profile_images/{{post.user.image_name}}" class="rounded-circle" style="height: 50px; width: 50px;">
-                        </a>
-                        <div class="media-body" style="font-size: 15px; margin-top: 13px;">
-                            <a href="/posts/{{post.user.username}}" >{{post.user.username}}</a>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <!-- Likes Count -->
-                        <span id="likes-count-{{post.id}}">{{ post.likes|length }}</span>
-
-                        <!-- Display thumbs up -->
-                        {% if user.id in post.likes|map(attribute="author_id")|list %}
-                            <i class="fas fa-thumbs-up" id="like-button-{{post.id}}" onclick="like({{post.id}})"></i>
-                        {% else %}
-                            <i class="far fa-thumbs-up" id="like-button-{{post.id}}" onclick="like({{post.id}})"></i>
-                        {% endif %}
-
-                        <!-- Delete button -->
-                        {% if user.id == post.author_id %}
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="/delete_post/{{post.id}}" class="dropdown-item">Delete</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        {% endif %}
+<h1 align="center" style="padding-top: 20px;">{% block header %}Posts{% endblock %}</h1>
+<div class="posts">
+    {% for post in posts %}
+        <div class="card border-dark">
+            <!-- Card Title -->
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="media">
+                    <!-- Display User's Photo -->
+                    <a href="/posts/{{post.user.username}}" style="margin-right: 10px;">
+                        <img src="/static/profile_images/{{post.user.image_name}}" class="rounded-circle" style="height: 50px; width: 50px;">
+                    </a>
+                    <!-- Display User's Name -->
+                    <div class="media-body" style="font-size: 15px; margin-top: 13px;">
+                        <a href="/posts/{{post.user.username}}" >{{post.user.username}}</a>
                     </div>
                 </div>
                 
-                <!-- Display content of the post -->
-                <div class="card-body">
-                    {% if not post.image_name %}
-                    <div class="card-text">{{post.content|safe}}</div><br />
+                <div>
+                    <!-- Likes Count -->
+                    <span id="likes-count-{{post.id}}">{{ post.likes|length }}</span>
+
+                    <!-- Display Thumbs Up -->
+                    {% if user.id in post.likes|map(attribute="author_id")|list %}
+                        <i class="fas fa-thumbs-up" id="like-button-{{post.id}}" onclick="like({{post.id}})"></i>
                     {% else %}
-                    <div class="card-text">
-                        {{post.content|safe}}<br />
-                        <img src="/static/images/{{post.image_name}}" width="60%" height="60%">
-                    </div><br />
+                        <i class="far fa-thumbs-up" id="like-button-{{post.id}}" onclick="like({{post.id}})"></i>
                     {% endif %}
-                    
-                    <!-- Display Comments with collapse -->
-                    <div class="collapse" id="comments-{{post.id}}">
-                        <div class="card">
-                            <div class="card-body" id="comments-expanded-{{post.id}}">
-                                {% for comment in post.comments %}
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <!-- Display user name and text of comment -->
-                                        <div class="media">
-                                            <a href="/posts/{{comment.user.username}}" style="margin-right: 10px;">
-                                                <img src="/static/profile_images/{{comment.user.image_name}}" class="rounded-circle" style="height: 40px; width: 40px;">
-                                            </a>
-                                            <div class="media-body" style="font-size: 15px; margin-top: 8px;">
-                                                <a href="/posts/{{comment.user.username}}" >{{comment.user.username}}</a>: {{comment.content}}
-                                            </div>
-                                        </div>
 
-                                        <div>
-                                            <!-- Display time -->
-                                            <small class="text-muted"> {{comment.date_created.strftime('%Y-%m-%d %H:%M:%S')}}</small>
-                                            
-                                            <!-- Delete button -->
-                                            {% if user.id == comment.author_id or user.id == post.author_id %}
-                                                        <div class="btn-group">
-                                                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
-                                                            <ul class="dropdown-menu">
-                                                                <li>
-                                                                    <a href="/delete_comment/{{comment.id}}" class="dropdown-item">Delete</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <br />
-                                {% endfor %}
-                            </div>
+                    <!-- Delete Button -->
+                    {% if user.id == post.author_id %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="/delete_post/{{post.id}}" class="dropdown-item">Delete</a>
+                                </li>
+                            </ul>
                         </div>
-                    </div>
-
-                    <p class="card-text">
-                        <!-- If there are > 1 comments, then use collapse to display -->
-                        {% if post.comments|length > 1 %}
-                            <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button">
-                                <small>View {{post.comments|length}} Comments</small>
-                            </a>
-                        <!-- If there is only one comment, then display the comment directly -->    
-                        {% elif post.comments|length == 1 %}
-                            <!-- Display Comments without collapse -->
-                            <div id="comments-{{post.id}}">
-                                <div class="card">
-                                    <div class="card-body" id="comments-expanded-{{post.id}}">
-                                        {% for comment in post.comments %}
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <!-- Display user name and text of comment -->
-                                                <div class="media">
-                                                    <a href="/posts/{{comment.user.username}}" style="margin-right: 10px;">
-                                                        <img src="/static/profile_images/{{comment.user.image_name}}" class="rounded-circle" style="height: 40px; width: 40px;">
-                                                    </a>
-                                                    <div class="media-body" style="font-size: 15px; margin-top: 8px;">
-                                                        <a href="/posts/{{comment.user.username}}" >{{comment.user.username}}</a>: {{comment.content}}
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <!-- Display time -->
-                                                    <small class="text-muted"> {{comment.date_created.strftime('%Y-%m-%d %H:%M:%S')}}</small>
-                                                    
-                                                    <!-- Delete button -->
-                                                    {% if user.id == comment.author_id or user.id == post.author_id %}
-                                                        <div class="btn-group">
-                                                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
-                                                            <ul class="dropdown-menu">
-                                                                <li>
-                                                                    <a href="/delete_comment/{{comment.id}}" class="dropdown-item">Delete</a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        <!-- If there is no comment, then display "No Comments!" -->
-                        {% else %}
-                            <small class="text-muted">No Comments!</small>
-                        {% endif %}
-                    </p>
-
-                    <!-- Add Comment -->
-                    <form class="input-group mb-3" method="POST" action="/create_comment/{{post.id}}">
-                        <input type="text" id="comment" name="comment" class="form-control" placeholder="Add A Comment..."/> 
-                        <button type="submit" class="btn btn-primary">COMMENT</button>
-                    </form>
-                </div>
-
-                <!-- Display time -->
-                <div class="card-footer text-muted">
-                    <div class="card-text">{{post.date_created.strftime('%Y-%m-%d %H:%M:%S')}}</div>
+                    {% endif %}
                 </div>
             </div>
-            <br />
-        {% endfor %}
-    </div>
+            
+            <!-- Card Content -->
+            <div class="card-body">
+                <!-- Display Post Content -->
+                {% if not post.image_name %}
+                <div class="card-text">{{post.content|safe}}</div><br />
+                {% else %}
+                <div class="card-text">
+                    {{post.content|safe}}<br />
+                    <img src="/static/images/{{post.image_name}}" width="60%" height="60%">
+                </div>
+                <br />
+                {% endif %}
+                
+                <!-- Display Comments(collapse) -->
+                <div class="collapse" id="comments-{{post.id}}">
+                    <div class="card">
+                        <div class="card-body" id="comments-expanded-{{post.id}}">
+                            {% for comment in post.comments %}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="media">
+                                        <!-- Display User's Photo -->
+                                        <a href="/posts/{{comment.user.username}}" style="margin-right: 10px;">
+                                            <img src="/static/profile_images/{{comment.user.image_name}}" class="rounded-circle" style="height: 40px; width: 40px;">
+                                        </a>
+                                        <!-- Display User's Name -->
+                                        <div class="media-body" style="font-size: 15px; margin-top: 8px;">
+                                            <a href="/posts/{{comment.user.username}}" >{{comment.user.username}}</a>: {{comment.content}}
+                                        </div>
+                                    </div>
 
-    <!-- Create Post -->
-    {% block footer %}
-        <div align="right" class="fixed-bottom" style="padding-bottom: 20px; padding-right: 20px;">
-            <a href="/create_post">
-                <button type="button" class="btn btn-primary btn-lg" style="border-radius: 50%; width:50px; height:50px; font-size:20px;">
-                +
-                </button>
-            </a>
+                                    <div>
+                                        <!-- Display Time -->
+                                        <small class="text-muted"> {{comment.date_created.strftime('%Y-%m-%d %H:%M:%S')}}</small>
+                                        
+                                        <!-- Delete Button -->
+                                        {% if user.id == comment.author_id or user.id == post.author_id %}
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="/delete_comment/{{comment.id}}" class="dropdown-item">Delete</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <br />
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <p class="card-text">
+                    <!-- If there are > 1 comments, then use collapse to display -->
+                    {% if post.comments|length > 1 %}
+                        <a data-bs-toggle="collapse" href="#comments-{{post.id}}" role="button">
+                            <small>View {{post.comments|length}} Comments</small>
+                        </a>
+                    <!-- If there is only one comment, then display the comment directly -->    
+                    {% elif post.comments|length == 1 %}
+                        <!-- Display Comments without collapse -->
+                        <div id="comments-{{post.id}}">
+                            <div class="card">
+                                <div class="card-body" id="comments-expanded-{{post.id}}">
+                                    {% for comment in post.comments %}
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="media">
+                                                <!-- Display User's Photo -->
+                                                <a href="/posts/{{comment.user.username}}" style="margin-right: 10px;">
+                                                    <img src="/static/profile_images/{{comment.user.image_name}}" class="rounded-circle" style="height: 40px; width: 40px;">
+                                                </a>
+                                                <!-- Display User's Name -->
+                                                <div class="media-body" style="font-size: 15px; margin-top: 8px;">
+                                                    <a href="/posts/{{comment.user.username}}" >{{comment.user.username}}</a>: {{comment.content}}
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <!-- Display Time -->
+                                                <small class="text-muted"> {{comment.date_created.strftime('%Y-%m-%d %H:%M:%S')}}</small>
+                                                
+                                                <!-- Delete Button -->
+                                                {% if user.id == comment.author_id or user.id == post.author_id %}
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a href="/delete_comment/{{comment.id}}" class="dropdown-item">Delete</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    <!-- If there is no comment, then display "No Comments!" -->
+                    {% else %}
+                        <small class="text-muted">No Comments!</small>
+                    {% endif %}
+                </p>
+
+                <!-- Add Comment -->
+                <form class="input-group mb-3" method="POST" action="/create_comment/{{post.id}}">
+                    <input type="text" id="comment" name="comment" class="form-control" placeholder="Add A Comment..."/> 
+                    <button type="submit" class="btn btn-primary">COMMENT</button>
+                </form>
+            </div>
+
+            <!-- Display Time -->
+            <div class="card-footer text-muted">
+                <div class="card-text">{{post.date_created.strftime('%Y-%m-%d %H:%M:%S')}}</div>
+            </div>
         </div>
-    {% endblock %}
+        <br />
+    {% endfor %}
+</div>
+<br />
+
+<!-- Create Post -->
+{% block footer %}
+    <div align="right" class="fixed-bottom" style="padding-bottom: 20px; padding-right: 20px;">
+        <a href="/create_post">
+            <button type="button" class="btn btn-primary btn-lg" style="border-radius: 50%; width:50px; height:50px; font-size:20px;">
+            +
+            </button>
+        </a>
+    </div>
+{% endblock %}
 {% endblock %}

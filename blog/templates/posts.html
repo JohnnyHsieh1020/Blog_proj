@@ -1,16 +1,29 @@
-{% extends 'posts_div.html' %}
-{% block title %}{{username}}'s Posts{% endblock %}
+{% extends 'posts_div.html' %} 
+{% block title %}{{username}}'s Posts{% endblock %} 
 {% block header %} {{username}}'s Posts {% endblock %} 
 {% block footer %}
 <div align="center">
     <a href="/home">
-        <button type="button" class="btn btn-lg btn-secondary">Back</button>
+        <button type="button" class="btn btn-secondary btn-lg">Back</button>
     </a>
 </div>
-<div align="right" class="fixed-bottom" style="padding-bottom: 20px; padding-right: 20px;">
+<div
+    align="right"
+    class="fixed-bottom"
+    style="padding-bottom: 20px; padding-right: 20px"
+>
     <a href="/create_post">
-        <button type="button" class="btn btn-primary btn-lg" style="border-radius: 50%; width:50px; height:50px; font-size:20px;">
-        +
+        <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            style="
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            "
+        >
+            +
         </button>
     </a>
 </div>
