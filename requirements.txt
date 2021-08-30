@@ -2,3 +2,5 @@ flask
 Flask-SQLAlchemy
 flask-login
 gunicorn
+psycopg2
+flask-migrate
