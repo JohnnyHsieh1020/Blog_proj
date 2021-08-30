@@ -39,7 +39,7 @@ Connect to PostgreSQL:
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_name:password@IP:PORT/db_name'
 ```
 
-1. Create User table, with 5 columns.
+1. Create User table, with 6 columns.
    - id (P-key)
    - username
    - email
@@ -49,7 +49,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user_name:password@IP:PORT
    - **posts**
    - **comments**
    - **likes**
-2. Create Post table, with 7 columns.
+2. Create Post table, with 5 columns.
    - id (P-key)
    - content
    - image_name
