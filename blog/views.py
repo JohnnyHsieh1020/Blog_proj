@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
+from datetime import datetime
 from .models import User, Post, Comment, Like
 from . import db
-from werkzeug.utils import secure_filename
 import os
-from datetime import datetime
 
 
 views = Blueprint("views", __name__)
@@ -50,7 +50,7 @@ def create_post():
 
             db.session.add(post)
             db.session.commit()
-            
+
             flash("Post Created!", category="success")
             return redirect(url_for("views.home"))
 
@@ -86,6 +86,7 @@ def create_comment(post_id):
         flash("Comment cannot be empty!", category="error")
     else:
         post = Post.query.filter_by(id=post_id)
+
         if not post:
             flash("Post does not exist!", category="error")
         else:
@@ -103,13 +104,14 @@ def create_comment(post_id):
 @login_required  # Access this page if you have logged in.
 def delete_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-    image_name = post.image_name
 
     if not post:
         flash("Post does not exist!", category="error")
     elif current_user.id != post.author_id:
         flash("Permission Denied!", category="error")
     else:
+        image_name = post.image_name
+
         if image_name is None:
             db.session.delete(post)
             db.session.commit()

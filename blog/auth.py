@@ -1,12 +1,12 @@
 # Login, Logout and Signup
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from . import db
-from .models import User
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-import os
 from datetime import datetime
+from .models import User
+from . import db
+import os
 
 
 auth = Blueprint("auth", __name__)
@@ -22,7 +22,9 @@ def login():
 
         # Check login info.
         user = User.query.filter_by(email=email).first()
+        
         if user:
+            
             if check_password_hash(user.pwd, pwd):
                 flash(f"Welcome {user.username}!", category="success")
                 # If the user visiting the website is logged in or not.
@@ -71,7 +73,7 @@ def sign_up():
             )
             db.session.add(new_user)
             db.session.commit()
-            
+
             login_user(new_user, remember=True)
             flash(f"Welcome {username}!", category="success")
             return redirect(url_for("views.home"))
@@ -93,6 +95,7 @@ def profile():
         # If the user change their name.
         if current_user.username != name:
             username_exists = User.query.filter_by(username=name).first()
+            
             if username_exists:
                 flash("Name is already in used!", category="error")
             # If the user does not change their password.
@@ -145,6 +148,7 @@ def update_photo():
             file.filename
         )
         file.save(os.path.join("blog/static/profile_images", image_name))
+        
         if user.image_name != "default.png":
             os.remove(f"blog/static/profile_images/{user.image_name}")
             user.image_name = image_name
